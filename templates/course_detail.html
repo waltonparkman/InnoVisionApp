@@ -3,9 +3,131 @@
 {% block content %}
     <h2>{{ course.title }}</h2>
     <p>{{ course.description }}</p>
-    <div class="course-content">
-        <!-- Add more course content here -->
-        <p>This is where the course content will be displayed.</p>
+    
+    <h3>Personalized Content</h3>
+    <div class="personalized-content">
+        <h4>Current Difficulty: {{ adjusted_difficulty }}</h4>
+        <p>This difficulty level is dynamically adjusted based on your performance and engagement.</p>
+        <div class="course-content">
+            <h5>Original Content:</h5>
+            {{ personalized_content.original_content | safe }}
+        </div>
+        <div class="adapted-content">
+            <h5>Adapted Content:</h5>
+            {{ personalized_content.adapted_content | safe }}
+        </div>
+        <div class="learning-style-adaptations">
+            <h4>Adaptations for your learning style:</h4>
+            <p>{{ personalized_content.learning_style_adaptations }}</p>
+        </div>
+        <div class="recommended-resources">
+            <h4>Recommended Resources:</h4>
+            <ul>
+            {% for resource in personalized_content.recommended_resources %}
+                <li>{{ resource }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="adaptive-learning-path">
+            <h4>Your Adaptive Learning Path:</h4>
+            <ol>
+            {% for step in personalized_content.adaptive_path %}
+                <li>{{ step }}</li>
+            {% endfor %}
+            </ol>
+        </div>
     </div>
+
+    <div id="progress-container">
+        <h3>Your Progress</h3>
+        <div id="progress-bar" style="width: {{ user_progress }}%;"></div>
+        <p id="progress-text">{{ user_progress }}%</p>
+    </div>
+
+    <button id="update-progress">Mark as Complete</button>
+
+    <div id="feedback-form">
+        <h3>Provide Feedback</h3>
+        <label for="difficulty">Difficulty:</label>
+        <select id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        </select>
+        <label for="engagement">Engagement:</label>
+        <select id="engagement">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+        </select>
+        <textarea id="feedback-text" placeholder="Enter your feedback here"></textarea>
+        <button id="submit-feedback">Submit Feedback</button>
+    </div>
+
+    <div id="recommended-courses">
+        <h3>Recommended Courses</h3>
+        <ul>
+        {% for rec_course in recommended_courses %}
+            <li><a href="{{ url_for('courses.course_detail', course_id=rec_course.id) }}">{{ rec_course.title }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <div id="collaborative-recommendations">
+        <h3>Courses You Might Like</h3>
+        <ul>
+        {% for course_title in personalized_content.collaborative_recommendations %}
+            <li>{{ course_title }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+
     <a href="{{ url_for('courses.course_list') }}" class="btn">Back to Course List</a>
+
+    <script>
+        document.getElementById('update-progress').addEventListener('click', function() {
+            fetch('{{ url_for("courses.update_progress", course_id=course.id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('progress-bar').style.width = data.progress + '%';
+                    document.getElementById('progress-text').innerText = data.progress + '%';
+                } else {
+                    alert('Failed to update progress');
+                }
+            });
+        });
+
+        document.getElementById('submit-feedback').addEventListener('click', function() {
+            const difficulty = document.getElementById('difficulty').value;
+            const engagement = document.getElementById('engagement').value;
+            const feedbackText = document.getElementById('feedback-text').value;
+
+            fetch('{{ url_for("courses.submit_feedback", course_id=course.id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    difficulty: difficulty,
+                    engagement: engagement,
+                    feedback: feedbackText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Feedback submitted successfully');
+                    document.getElementById('feedback-text').value = '';
+                } else {
+                    alert('Failed to submit feedback');
+                }
+            });
+        });
+    </script>
 {% endblock %}

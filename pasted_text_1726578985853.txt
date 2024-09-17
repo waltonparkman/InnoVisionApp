@@ -1,0 +1,35 @@
+2024-09-17 13:16:03,338 - INFO - 172.31.196.23 - - [17/Sep/2024 13:16:03] "GET /courses HTTP/1.1" 200 -
+2024-09-17 13:16:03,466 - INFO - 172.31.196.23 - - [17/Sep/2024 13:16:03] "GET /static/css/styles.css HTTP/1.1" 304 -
+2024-09-17 13:16:03,476 - INFO - 172.31.196.23 - - [17/Sep/2024 13:16:03] "GET /static/js/main.js HTTP/1.1" 304 -
+2024-09-17 13:16:06,015 - ERROR - Error in personalize_content: unsupported operand type(s) for -: 'datetime.datetime' and 'NoneType'
+2024-09-17 13:16:06,052 - ERROR - Exception on /courses/1 [GET]
+Traceback (most recent call last):
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/InnoVisionApp/routes/courses.py", line 44, in course_detail
+    learning_groups = collaborative_filtering_groups(all_users)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/InnoVisionApp/services/ai_service.py", line 154, in collaborative_filtering_groups
+    user_features = np.array([[u.average_performance(), u.engagement_score(), u.learning_pace()] for u in users])
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/InnoVisionApp/services/ai_service.py", line 154, in <listcomp>
+    user_features = np.array([[u.average_performance(), u.engagement_score(), u.learning_pace()] for u in users])
+                                                        ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/InnoVisionApp/models.py", line 32, in engagement_score
+    days_since_signup = (datetime.utcnow() - self.last_login).days + 1
+                         ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+TypeError: unsupported operand type(s) for -: 'datetime.datetime' and 'NoneType'
+2024-09-17 13:16:06,092 - INFO - 172.31.196.23 - - [17/Sep/2024 13:16:06] "GET /courses/1 HTTP/1.1" 500 -
