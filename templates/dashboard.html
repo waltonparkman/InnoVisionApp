@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Welcome to Your Dashboard</h1>
+    <h2>Course Progress</h2>
+    <canvas id="courseProgressChart"></canvas>
+    
+    <h2>Quiz Results</h2>
+    <ul>
+    {% for result in quiz_results %}
+        <li>{{ result.title }}: {{ '%.2f'|format(result.average_score|float) }}%</li>
+    {% endfor %}
+    </ul>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="courseProgressData" type="application/json">
+        {{ course_progress | tojson | safe }}
+    </script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
