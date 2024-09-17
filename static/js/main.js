@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize any common elements or event listeners here
     initNavigation();
+    initOfflineStorage();
 });
 
 function initNavigation() {
@@ -39,6 +40,81 @@ function showMessage(message, type = 'info') {
     setTimeout(() => {
         messageContainer.removeChild(messageElement);
     }, 5000);
+}
+
+function initOfflineStorage() {
+    if ('indexedDB' in window) {
+        let db;
+        const request = indexedDB.open('LearnAIOfflineDB', 1);
+
+        request.onerror = function(event) {
+            console.error('IndexedDB error:', event.target.error);
+        };
+
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            console.log('IndexedDB initialized successfully');
+        };
+
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            const objectStore = db.createObjectStore('courses', { keyPath: 'id' });
+            objectStore.createIndex('title', 'title', { unique: false });
+            console.log('IndexedDB object store created');
+        };
+    }
+}
+
+function saveCourseOffline(course) {
+    if ('indexedDB' in window) {
+        const request = indexedDB.open('LearnAIOfflineDB', 1);
+
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const transaction = db.transaction(['courses'], 'readwrite');
+            const objectStore = transaction.objectStore('courses');
+            const addRequest = objectStore.put(course);
+
+            addRequest.onsuccess = function() {
+                console.log('Course saved offline:', course.title);
+                showMessage('Course saved for offline use', 'success');
+            };
+
+            addRequest.onerror = function() {
+                console.error('Error saving course offline:', addRequest.error);
+                showMessage('Failed to save course for offline use', 'error');
+            };
+        };
+    }
+}
+
+function loadOfflineCourses() {
+    return new Promise((resolve, reject) => {
+        if ('indexedDB' in window) {
+            const request = indexedDB.open('LearnAIOfflineDB', 1);
+
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                const transaction = db.transaction(['courses'], 'readonly');
+                const objectStore = transaction.objectStore('courses');
+                const getAllRequest = objectStore.getAll();
+
+                getAllRequest.onsuccess = function() {
+                    resolve(getAllRequest.result);
+                };
+
+                getAllRequest.onerror = function() {
+                    reject(getAllRequest.error);
+                };
+            };
+
+            request.onerror = function(event) {
+                reject(event.target.error);
+            };
+        } else {
+            reject(new Error('IndexedDB not supported'));
+        }
+    });
 }
 
 // Add more common functions as needed

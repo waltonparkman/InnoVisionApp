@@ -23,8 +23,15 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadCourses() {
     try {
         const response = await fetch('/courses');
-        const courses = await response.json();
-        displayCourses(courses);
+        if (response.ok) {
+            const courses = await response.json();
+            displayCourses(courses);
+            courses.forEach(saveCourseOffline);
+        } else {
+            console.log('Failed to fetch courses from server. Loading offline courses.');
+            const offlineCourses = await loadOfflineCourses();
+            displayCourses(offlineCourses);
+        }
     } catch (error) {
         console.error('Error loading courses:', error);
         showMessage('Failed to load courses', 'error');
@@ -42,16 +49,41 @@ function displayCourses(courses) {
             <h3>${course.title}</h3>
             <p>${course.description}</p>
             <a href="/courses/${course.id}" class="btn">View Course</a>
+            <button class="btn btn-secondary save-offline" data-course-id="${course.id}">Save Offline</button>
         `;
         courseList.appendChild(courseElement);
+    });
+
+    // Add event listeners for "Save Offline" buttons
+    const saveOfflineButtons = document.querySelectorAll('.save-offline');
+    saveOfflineButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            const courseId = event.target.getAttribute('data-course-id');
+            const course = courses.find(c => c.id == courseId);
+            if (course) {
+                saveCourseOffline(course);
+            }
+        });
     });
 }
 
 async function loadCourseContent(courseId) {
     try {
         const response = await fetch(`/courses/${courseId}`);
-        const content = await response.json();
-        displayCourseContent(content);
+        if (response.ok) {
+            const content = await response.json();
+            displayCourseContent(content);
+            saveCourseOffline(content);
+        } else {
+            console.log('Failed to fetch course content from server. Loading offline content.');
+            const offlineCourses = await loadOfflineCourses();
+            const offlineCourse = offlineCourses.find(c => c.id == courseId);
+            if (offlineCourse) {
+                displayCourseContent(offlineCourse);
+            } else {
+                showMessage('Course content not available offline', 'error');
+            }
+        }
     } catch (error) {
         console.error('Error loading course content:', error);
         showMessage('Failed to load course content', 'error');
@@ -71,8 +103,12 @@ function displayCourseContent(content) {
 async function loadQuiz(courseId) {
     try {
         const response = await fetch(`/courses/${courseId}/quiz`);
-        const quiz = await response.json();
-        displayQuiz(quiz);
+        if (response.ok) {
+            const quiz = await response.json();
+            displayQuiz(quiz);
+        } else {
+            showMessage('Quiz not available offline', 'error');
+        }
     } catch (error) {
         console.error('Error loading quiz:', error);
         showMessage('Failed to load quiz', 'error');
@@ -123,11 +159,17 @@ async function submitQuiz(quizId) {
             body: JSON.stringify(answers),
         });
 
-        const result = await response.json();
-        showQuizResult(result);
+        if (response.ok) {
+            const result = await response.json();
+            showQuizResult(result);
+        } else {
+            showMessage('Failed to submit quiz', 'error');
+        }
     } catch (error) {
         console.error('Error submitting quiz:', error);
-        showMessage('Failed to submit quiz', 'error');
+        showMessage('Failed to submit quiz. It will be submitted when you\'re back online.', 'warning');
+        // Store the quiz answers locally for later submission
+        localStorage.setItem(`quiz_${quizId}_answers`, JSON.stringify(answers));
     }
 }
 
@@ -140,3 +182,22 @@ function showQuizResult(result) {
         <a href="/dashboard" class="btn">Back to Dashboard</a>
     `;
 }
+
+// Function to check for and submit stored quiz answers when online
+function submitStoredQuizzes() {
+    if (navigator.onLine) {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('quiz_') && key.endsWith('_answers')) {
+                const quizId = key.split('_')[1];
+                const answers = JSON.parse(localStorage.getItem(key));
+                submitQuiz(quizId, answers);
+                localStorage.removeItem(key);
+            }
+        }
+    }
+}
+
+// Check for stored quizzes to submit when the page loads and when coming back online
+window.addEventListener('load', submitStoredQuizzes);
+window.addEventListener('online', submitStoredQuizzes);
