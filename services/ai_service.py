@@ -11,8 +11,6 @@ from sklearn.pipeline import Pipeline
 import logging
 from datetime import datetime, timedelta
 from sklearn.mixture import GaussianMixture
-from surprise import SVD, Dataset, Reader
-from surprise.model_selection import cross_validate
 
 learning_styles = ['visual', 'auditory', 'kinesthetic', 'reading/writing']
 sample_responses = [
@@ -308,27 +306,24 @@ def content_based_recommendations(user, all_courses):
     return similarities.flatten()
 
 def collaborative_filtering_recommendations(user, all_courses, all_users):
-    ratings = []
-    for u in all_users:
-        for uc in u.user_courses:
-            ratings.append((u.id, uc.course_id, uc.progress))
+    user_course_matrix = np.zeros((len(all_users), len(all_courses)))
+    for i, u in enumerate(all_users):
+        for j, c in enumerate(all_courses):
+            user_course = next((uc for uc in u.user_courses if uc.course_id == c.id), None)
+            user_course_matrix[i, j] = user_course.progress if user_course else 0
 
-    reader = Reader(rating_scale=(0, 100))
-    data = Dataset.load_from_tuples(ratings, reader)
-
-    svd = SVD(n_factors=20, n_epochs=20, lr_all=0.005, reg_all=0.02)
-    cross_validate(svd, data, measures=['RMSE', 'MAE'], cv=5, verbose=False)
-
-    trainset = data.build_full_trainset()
-    svd.fit(trainset)
-
-    user_predictions = []
-    for course in all_courses:
-        predicted_rating = svd.predict(user.id, course.id).est
-        user_predictions.append((course, predicted_rating))
-
-    user_predictions.sort(key=lambda x: x[1], reverse=True)
-    return [course for course, _ in user_predictions[:5]]
+    course_similarity = cosine_similarity(user_course_matrix.T)
+    user_ratings = user_course_matrix[all_users.index(user)]
+    
+    recommendations = []
+    for i, course in enumerate(all_courses):
+        if user_ratings[i] == 0:  # User hasn't taken this course
+            similar_courses = course_similarity[i]
+            course_score = np.sum(similar_courses * user_ratings) / np.sum(np.abs(similar_courses))
+            recommendations.append((course, course_score))
+    
+    recommendations.sort(key=lambda x: x[1], reverse=True)
+    return [course for course, _ in recommendations[:5]]
 
 def hybrid_recommendations(user, all_courses, users, n_recommendations=5):
     content_based_scores = content_based_recommendations(user, all_courses)

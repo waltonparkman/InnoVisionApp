@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models import Course, UserCourse, User, Quiz, UserQuizResult
 from services.ai_service import personalize_content, hybrid_recommendations, dynamic_difficulty_adjustment
@@ -118,3 +118,46 @@ def calculate_quiz_score(quiz, form_data):
             correct_answers += 1
     
     return (correct_answers / total_questions) * 100
+
+# New routes for course creation and management
+@bp.route('/courses/create', methods=['GET', 'POST'])
+@login_required
+def create_course():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        content = request.form.get('content')
+        
+        new_course = Course(title=title, description=description, content=content)
+        db.session.add(new_course)
+        db.session.commit()
+        
+        flash('Course created successfully!', 'success')
+        return redirect(url_for('courses.course_list'))
+    
+    return render_template('create_course.html')
+
+@bp.route('/courses/<int:course_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_course(course_id):
+    course = Course.query.get_or_404(course_id)
+    
+    if request.method == 'POST':
+        course.title = request.form.get('title')
+        course.description = request.form.get('description')
+        course.content = request.form.get('content')
+        
+        db.session.commit()
+        flash('Course updated successfully!', 'success')
+        return redirect(url_for('courses.course_detail', course_id=course.id))
+    
+    return render_template('edit_course.html', course=course)
+
+@bp.route('/courses/<int:course_id>/delete', methods=['POST'])
+@login_required
+def delete_course(course_id):
+    course = Course.query.get_or_404(course_id)
+    db.session.delete(course)
+    db.session.commit()
+    flash('Course deleted successfully!', 'success')
+    return redirect(url_for('courses.course_list'))

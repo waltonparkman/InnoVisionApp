@@ -1,0 +1,53 @@
+Traceback (most recent call last):  File "/home/runner/InnoVisionApp/.pythonlibs/bin/flask", line 8, in <module>
+    sys.exit(main())
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/cli.py", line 1105, in main
+    cli.main()
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/click/core.py", line 1078, in main
+    rv = self.invoke(ctx)
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/click/core.py", line 1682, in invoke
+    cmd_name, cmd, args = self.resolve_command(ctx, args)
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/click/core.py", line 1729, in resolve_command
+    cmd = self.get_command(ctx, cmd_name)
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/cli.py", line 611, in get_command
+    app = info.load_app()
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/cli.py", line 335, in load_app
+    app = locate_app(import_name, name)
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/cli.py", line 245, in locate_app
+    __import__(module_name)
+  File "/home/runner/InnoVisionApp/main.py", line 24, in <module>
+    from routes import auth, courses, user
+  File "/home/runner/InnoVisionApp/routes/courses.py", line 5, in <module>
+    from services.ai_service import personalize_content, hybrid_recommendations, dynamic_difficulty_adjustment
+  File "/home/runner/InnoVisionApp/services/ai_service.py", line 14, in <module>
+    from surprise import SVD, Dataset, Reader
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/surprise/__init__.py", line 6, in <module>
+    from .prediction_algorithms import (
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/surprise/prediction_algorithms/__init__.py", line 23, in <module>
+    from .algo_base import AlgoBase
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/surprise/prediction_algorithms/algo_base.py", line 8, in <module>
+    from .. import similarities as sims
+Error: While importing 'main', an ImportError was raised:
+
+Traceback (most recent call last):
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/flask/cli.py", line 245, in locate_app
+    __import__(module_name)
+  File "/home/runner/InnoVisionApp/main.py", line 24, in <module>
+    from routes import auth, courses, user
+  File "/home/runner/InnoVisionApp/routes/courses.py", line 5, in <module>
+    from services.ai_service import personalize_content, hybrid_recommendations, dynamic_difficulty_adjustment
+  File "/home/runner/InnoVisionApp/services/ai_service.py", line 14, in <module>
+    from surprise import SVD, Dataset, Reader
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/surprise/__init__.py", line 6, in <module>
+    from .prediction_algorithms import (
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/surprise/prediction_algorithms/__init__.py", line 23, in <module>
+    from .algo_base import AlgoBase
+  File "/home/runner/InnoVisionApp/.pythonlibs/lib/python3.11/site-packages/surprise/prediction_algorithms/algo_base.py", line 8, in <module>
+    from .. import similarities as sims
+  File "surprise/similarities.pyx", line 1, in init surprise.similarities
+ImportError: numpy.core.multiarray failed to import (auto-generated because you didn't call 'numpy.import_array()' after cimporting numpy; use '<void>numpy._import_array' to disable if you are certain you don't need it).
+
+
+Usage: flask [OPTIONS] COMMAND [ARGS]...
+Try 'flask --help' for help.
+
+Error: No such command 'db'.

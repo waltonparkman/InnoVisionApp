@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Edit Course: {{ course.title }}</h2>
+    <form method="POST" action="{{ url_for('courses.edit_course', course_id=course.id) }}">
+        <div class="form-group">
+            <label for="title">Course Title:</label>
+            <input type="text" id="title" name="title" required class="form-control" value="{{ course.title }}">
+        </div>
+        <div class="form-group">
+            <label for="description">Course Description:</label>
+            <textarea id="description" name="description" required class="form-control">{{ course.description }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="content">Course Content:</label>
+            <textarea id="content" name="content" required class="form-control" rows="10">{{ course.content }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Course</button>
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    tinymce.init({
+        selector: '#content',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar_mode: 'floating',
+        height: 500
+    });
+</script>
+{% endblock %}
