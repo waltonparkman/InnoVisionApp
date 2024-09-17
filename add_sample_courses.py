@@ -1,5 +1,5 @@
 from main import app, db
-from models import Course, User, UserCourse, Quiz, UserQuizResult
+from models import Course, User, UserCourse, Quiz, UserQuizResult, StudyGroup
 import random
 from datetime import datetime, timedelta
 
@@ -215,7 +215,31 @@ Use Pandas to load a dataset of your choice, perform some basic data cleaning an
 
         db.session.commit()
 
+        # Add sample study groups
+        add_sample_study_groups()
+
     print("Sample data added successfully!")
+
+def add_sample_study_groups():
+    with app.app_context():
+        courses = Course.query.all()
+        users = User.query.all()
+        
+        for course in courses:
+            group_name = f"{course.title} Study Group"
+            description = f"A study group for students taking {course.title}"
+            new_group = StudyGroup(name=group_name, description=description, course_id=course.id)
+            db.session.add(new_group)
+            
+            # Add some random users to the group
+            for _ in range(3):
+                user = random.choice(users)
+                if user not in new_group.members:
+                    new_group.members.append(user)
+        
+        db.session.commit()
+    
+    print("Sample study groups added successfully!")
 
 if __name__ == "__main__":
     add_sample_data()

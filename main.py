@@ -21,11 +21,12 @@ from models import User
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-from routes import auth, courses, user
+from routes import auth, courses, user, peer_learning
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(courses.bp)
 app.register_blueprint(user.bp)
+app.register_blueprint(peer_learning.bp)
 
 @app.route('/')
 def index():

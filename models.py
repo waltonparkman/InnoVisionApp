@@ -13,6 +13,8 @@ class User(UserMixin, db.Model):
     quiz_results = db.relationship('UserQuizResult', back_populates='user')
     last_login = db.Column(db.DateTime, default=datetime.utcnow)
     total_study_time = db.Column(db.Integer, default=0)  # in minutes
+    study_groups = db.relationship('StudyGroup', secondary='user_study_group', back_populates='members')
+    forum_posts = db.relationship('ForumPost', back_populates='author')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -63,6 +65,8 @@ class Course(db.Model):
     content = db.Column(db.Text)
     user_courses = db.relationship('UserCourse', back_populates='course')
     quizzes = db.relationship('Quiz', back_populates='course')
+    study_groups = db.relationship('StudyGroup', back_populates='course')
+    forum_posts = db.relationship('ForumPost', back_populates='course')
 
 class UserCourse(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -87,3 +91,40 @@ class UserQuizResult(db.Model):
     score = db.Column(db.Float, nullable=False)
     user = db.relationship('User', back_populates='quiz_results')
     quiz = db.relationship('Quiz', back_populates='user_results')
+
+class StudyGroup(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    course = db.relationship('Course', back_populates='study_groups')
+    members = db.relationship('User', secondary='user_study_group', back_populates='study_groups')
+
+class UserStudyGroup(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    study_group_id = db.Column(db.Integer, db.ForeignKey('study_group.id'), nullable=False)
+    joined_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class ForumPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    author = db.relationship('User', back_populates='forum_posts')
+    course = db.relationship('Course', back_populates='forum_posts')
+    replies = db.relationship('ForumReply', back_populates='post', cascade='all, delete-orphan')
+
+class ForumReply(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('forum_post.id'), nullable=False)
+    author = db.relationship('User')
+    post = db.relationship('ForumPost', back_populates='replies')

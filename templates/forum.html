@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Forum</h2>
+    <a href="{{ url_for('peer_learning.create_forum_post') }}" class="btn btn-primary">Create New Post</a>
+    <div class="forum-post-list">
+        {% for post in posts %}
+            <div class="forum-post-card">
+                <h3><a href="{{ url_for('peer_learning.forum_post_detail', post_id=post.id) }}">{{ post.title }}</a></h3>
+                <p>Author: {{ post.author.username }}</p>
+                <p>Course: {{ post.course.title }}</p>
+                <p>Created: {{ post.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p>Replies: {{ post.replies|length }}</p>
+            </div>
+        {% else %}
+            <p>No forum posts available at the moment.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

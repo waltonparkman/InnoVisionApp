@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ study_group.name }}</h2>
+    <p>{{ study_group.description }}</p>
+    <p>Course: {{ study_group.course.title }}</p>
+    <h3>Members:</h3>
+    <ul>
+        {% for member in study_group.members %}
+            <li>{{ member.username }}</li>
+        {% endfor %}
+    </ul>
+    {% if current_user not in study_group.members %}
+        <a href="{{ url_for('peer_learning.join_study_group', group_id=study_group.id) }}" class="btn btn-success">Join Group</a>
+    {% endif %}
+    <a href="{{ url_for('peer_learning.study_groups') }}" class="btn btn-secondary">Back to Study Groups</a>
+{% endblock %}

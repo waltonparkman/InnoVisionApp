@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Study Groups</h2>
+    <a href="{{ url_for('peer_learning.create_study_group') }}" class="btn btn-primary">Create New Study Group</a>
+    <div class="study-group-list">
+        {% for group in study_groups %}
+            <div class="study-group-card">
+                <h3>{{ group.name }}</h3>
+                <p>{{ group.description }}</p>
+                <p>Course: {{ group.course.title }}</p>
+                <p>Members: {{ group.members|length }}</p>
+                <a href="{{ url_for('peer_learning.study_group_detail', group_id=group.id) }}" class="btn btn-info">View Details</a>
+                {% if current_user not in group.members %}
+                    <a href="{{ url_for('peer_learning.join_study_group', group_id=group.id) }}" class="btn btn-success">Join Group</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>No study groups available at the moment.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ post.title }}</h2>
+    <p>Author: {{ post.author.username }}</p>
+    <p>Course: {{ post.course.title }}</p>
+    <p>Created: {{ post.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    <div class="forum-post-content">
+        {{ post.content }}
+    </div>
+    <h3>Replies:</h3>
+    <div class="forum-replies">
+        {% for reply in post.replies %}
+            <div class="forum-reply">
+                <p>{{ reply.content }}</p>
+                <p>By: {{ reply.author.username }} on {{ reply.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+        {% else %}
+            <p>No replies yet.</p>
+        {% endfor %}
+    </div>
+    <h4>Add a Reply:</h4>
+    <form method="POST" action="{{ url_for('peer_learning.forum_post_reply', post_id=post.id) }}">
+        <div class="form-group">
+            <label for="content">Your Reply:</label>
+            <textarea id="content" name="content" required class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Reply</button>
+    </form>
+    <a href="{{ url_for('peer_learning.forum') }}" class="btn btn-secondary">Back to Forum</a>
+{% endblock %}
