@@ -291,7 +291,7 @@ def content_based_recommendations(user, all_courses):
     if not user_course_vectors:
         return np.zeros(len(all_courses))
     
-    user_profile = vstack(user_course_vectors).mean(axis=0)
+    user_profile = np.asarray(vstack(user_course_vectors).mean(axis=0)).flatten()
     
     all_course_vectors = vectorizer.transform([f"{course.description or ''} {course.content or ''}" for course in all_courses])
     
@@ -307,7 +307,7 @@ def content_based_recommendations(user, all_courses):
     return similarities.flatten()
 
 def collaborative_filtering_recommendations(user, all_courses, all_users):
-    user_course_matrix = np.zeros((len(all_users), len(all_courses)))
+    user_course_matrix = np.asarray(np.zeros((len(all_users), len(all_courses))))
     for i, u in enumerate(all_users):
         for j, c in enumerate(all_courses):
             user_course = next((uc for uc in u.user_courses if uc.course_id == c.id), None)
@@ -327,7 +327,7 @@ def collaborative_filtering_recommendations(user, all_courses, all_users):
     return [course for course, _ in recommendations[:5]]
 
 def hybrid_recommendations(user, all_courses, users, n_recommendations=5):
-    content_based_scores = content_based_recommendations(user, all_courses)
+    content_based_scores = np.asarray(content_based_recommendations(user, all_courses)).flatten()
     collaborative_recommendations = collaborative_filtering_recommendations(user, all_courses, users)
 
     hybrid_scores = []
