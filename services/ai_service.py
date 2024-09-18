@@ -295,7 +295,8 @@ def content_based_recommendations(user, all_courses):
     
     all_course_vectors = vectorizer.transform([f"{course.description or ''} {course.content or ''}" for course in all_courses])
     
-    svd = TruncatedSVD(n_components=100, random_state=42)
+    n_components = min(100, all_course_vectors.shape[1] - 1)
+    svd = TruncatedSVD(n_components=n_components, random_state=42)
     lsa = Pipeline([('svd', svd)])
     
     all_course_vectors_lsa = lsa.fit_transform(all_course_vectors)
