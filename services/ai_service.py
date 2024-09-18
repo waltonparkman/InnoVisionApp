@@ -287,13 +287,13 @@ def generate_adaptive_learning_path(user, course_id):
 
 def content_based_recommendations(user, all_courses):
     user_courses = user.user_courses
-    user_course_vectors = [vectorizer.transform([uc.course.description + ' ' + uc.course.content]) for uc in user_courses if uc.course]
+    user_course_vectors = [vectorizer.transform([f"{uc.course.description or ''} {uc.course.content or ''}"]) for uc in user_courses if uc.course]
     if not user_course_vectors:
         return np.zeros(len(all_courses))
     
     user_profile = vstack(user_course_vectors).mean(axis=0)
     
-    all_course_vectors = vectorizer.transform([course.description + ' ' + course.content for course in all_courses])
+    all_course_vectors = vectorizer.transform([f"{course.description or ''} {course.content or ''}" for course in all_courses])
     
     svd = TruncatedSVD(n_components=100, random_state=42)
     lsa = Pipeline([('svd', svd)])
