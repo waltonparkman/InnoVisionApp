@@ -129,7 +129,8 @@ def create_course():
         content = request.form.get('content')
         
         logging.info(f"Received course creation request - Title: {title}")
-        logging.debug(f"Course content received: {content[:100]}...")  # Log first 100 characters
+        logging.info(f"Description: {description[:100]}...")  # Log first 100 characters
+        logging.info(f"Content: {content[:100]}...")  # Log first 100 characters
         
         try:
             # Sanitize the content
