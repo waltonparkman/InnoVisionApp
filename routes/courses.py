@@ -5,6 +5,7 @@ from models import Course, UserCourse, User, Quiz, UserQuizResult, StudyGroup
 from services.ai_service import personalize_content, hybrid_recommendations, dynamic_difficulty_adjustment
 from database import db
 import numpy as np
+from bleach import clean
 
 bp = Blueprint('courses', __name__)
 
@@ -125,7 +126,7 @@ def create_course():
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form.get('description')
-        content = request.form.get('content')
+        content = clean(request.form.get('content'), tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
         
         new_course = Course(title=title, description=description, content=content)
         db.session.add(new_course)
@@ -144,7 +145,7 @@ def edit_course(course_id):
     if request.method == 'POST':
         course.title = request.form.get('title')
         course.description = request.form.get('description')
-        course.content = request.form.get('content')
+        course.content = clean(request.form.get('content'), tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
         
         db.session.commit()
         flash('Course updated successfully!', 'success')
@@ -157,17 +158,14 @@ def edit_course(course_id):
 def delete_course(course_id):
     course = Course.query.get_or_404(course_id)
     
-    # Delete associated study groups
     study_groups = StudyGroup.query.filter_by(course_id=course_id).all()
     for study_group in study_groups:
         db.session.delete(study_group)
     
-    # Delete associated user courses
     user_courses = UserCourse.query.filter_by(course_id=course_id).all()
     for user_course in user_courses:
         db.session.delete(user_course)
     
-    # Delete the course
     db.session.delete(course)
     
     try:
