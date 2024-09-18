@@ -1,7 +1,7 @@
 import logging
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import Course, UserCourse, User, Quiz, UserQuizResult
+from models import Course, UserCourse, User, Quiz, UserQuizResult, StudyGroup
 from services.ai_service import personalize_content, hybrid_recommendations, dynamic_difficulty_adjustment
 from database import db
 import numpy as np
@@ -119,7 +119,6 @@ def calculate_quiz_score(quiz, form_data):
     
     return (correct_answers / total_questions) * 100
 
-# New routes for course creation and management
 @bp.route('/courses/create', methods=['GET', 'POST'])
 @login_required
 def create_course():
@@ -157,7 +156,26 @@ def edit_course(course_id):
 @login_required
 def delete_course(course_id):
     course = Course.query.get_or_404(course_id)
+    
+    # Delete associated study groups
+    study_groups = StudyGroup.query.filter_by(course_id=course_id).all()
+    for study_group in study_groups:
+        db.session.delete(study_group)
+    
+    # Delete associated user courses
+    user_courses = UserCourse.query.filter_by(course_id=course_id).all()
+    for user_course in user_courses:
+        db.session.delete(user_course)
+    
+    # Delete the course
     db.session.delete(course)
-    db.session.commit()
-    flash('Course deleted successfully!', 'success')
+    
+    try:
+        db.session.commit()
+        flash('Course and associated study groups deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting course: {str(e)}")
+        flash('An error occurred while deleting the course. Please try again.', 'error')
+    
     return redirect(url_for('courses.course_list'))
