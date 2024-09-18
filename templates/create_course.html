@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>Create a New Course</h2>
-    <form method="POST" action="{{ url_for('courses.create_course') }}">
+    <form method="POST" action="{{ url_for('courses.create_course') }}" id="create-course-form">
         <div class="form-group">
             <label for="title">Course Title:</label>
             <input type="text" id="title" name="title" required class="form-control">
@@ -43,6 +43,12 @@
                 });
             },
             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+        });
+
+        // Add form submission event listener
+        document.getElementById('create-course-form').addEventListener('submit', function(e) {
+            // Ensure TinyMCE content is updated before form submission
+            tinymce.triggerSave();
         });
     });
 </script>

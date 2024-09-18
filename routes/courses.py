@@ -126,14 +126,22 @@ def create_course():
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form.get('description')
-        content = clean(request.form.get('content'), tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
+        content = request.form.get('content')
+        
+        # Sanitize the content
+        content = clean(content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
         
         new_course = Course(title=title, description=description, content=content)
         db.session.add(new_course)
-        db.session.commit()
         
-        flash('Course created successfully!', 'success')
-        return redirect(url_for('courses.course_list'))
+        try:
+            db.session.commit()
+            flash('Course created successfully!', 'success')
+            return redirect(url_for('courses.course_list'))
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error creating course: {str(e)}")
+            flash('An error occurred while creating the course. Please try again.', 'error')
     
     return render_template('create_course.html')
 
