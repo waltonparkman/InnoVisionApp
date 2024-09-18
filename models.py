@@ -31,10 +31,10 @@ class User(UserMixin, db.Model):
         if not self.user_courses or self.last_login is None:
             return 0
         
-        days_since_signup = (datetime.utcnow() - self.last_login).days + 1
-        login_frequency = len(self.user_courses) / days_since_signup
+        days_since_login = (datetime.utcnow() - self.last_login).days + 1
+        login_frequency = len(self.user_courses) / days_since_login
         
-        max_study_time = days_since_signup * 4 * 60
+        max_study_time = days_since_login * 4 * 60
         normalized_study_time = min(self.total_study_time / max_study_time, 1)
         
         engagement = (0.5 * login_frequency) + (0.5 * normalized_study_time)

@@ -59,7 +59,7 @@ def calculate_user_performance(user, course_id):
 
 def calculate_time_spent(user, course_id):
     user_course = next((uc for uc in user.user_courses if uc.course_id == course_id), None)
-    if user_course:
+    if user_course and user.last_login:
         time_diff = datetime.utcnow() - user.last_login
         return min(time_diff.total_seconds() / 3600, 10) / 10
     return 0.5
