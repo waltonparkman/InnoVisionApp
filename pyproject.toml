@@ -16,6 +16,8 @@ flask-migrate = "^4.0.7"
 scikit-surprise = "^1.1.4"
 cryptography = "^43.0.1"
 bleach = "^6.1.0"
+werkzeug = "^3.0.4"
+sqlalchemy = "^2.0.35"
 
 
 [build-system]

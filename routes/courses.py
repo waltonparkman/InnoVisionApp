@@ -128,14 +128,18 @@ def create_course():
         description = request.form.get('description')
         content = request.form.get('content')
         
-        # Sanitize the content
-        content = clean(content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
-        
-        new_course = Course(title=title, description=description, content=content)
-        db.session.add(new_course)
+        logging.info(f"Received course creation request - Title: {title}")
+        logging.debug(f"Course content received: {content[:100]}...")  # Log first 100 characters
         
         try:
+            # Sanitize the content
+            content = clean(content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
+            
+            new_course = Course(title=title, description=description, content=content)
+            db.session.add(new_course)
             db.session.commit()
+            
+            logging.info(f"Course created successfully - ID: {new_course.id}, Title: {title}")
             flash('Course created successfully!', 'success')
             return redirect(url_for('courses.course_list'))
         except Exception as e:
