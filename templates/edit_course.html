@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>Edit Course: {{ course.title }}</h2>
-    <form method="POST" action="{{ url_for('courses.edit_course', course_id=course.id) }}">
+    <form method="POST" action="{{ url_for('courses.edit_course', course_id=course.id) }}" id="edit-course-form">
         <div class="form-group">
             <label for="title">Course Title:</label>
             <input type="text" id="title" name="title" required class="form-control" value="{{ course.title }}">
@@ -12,7 +12,7 @@
             <textarea id="description" name="description" required class="form-control">{{ course.description }}</textarea>
         </div>
         <div class="form-group">
-            <label for="content">Course Content:</label>
+            <label for="content">Course Content (Markdown):</label>
             <textarea id="content" name="content" required class="form-control" rows="10">{{ course.content }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">Update Course</button>
@@ -20,38 +20,16 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.tiny.cloud/1/oly1pwo1sezqmns7jsm2qfl2r0u8livbgjoej2cohpsav7ih/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
 <script>
-    tinymce.init({
-        selector: '#content',
-        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak codesample',
-        toolbar_mode: 'floating',
-        toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | codesample | removeformat | help',
-        height: 500,
-        image_advtab: true,
-        image_uploadtab: true,
-        automatic_uploads: true,
-        file_picker_types: 'image',
-        file_picker_callback: function(cb, value, meta) {
-            var input = document.createElement('input');
-            input.setAttribute('type', 'file');
-            input.setAttribute('accept', 'image/*');
-            input.onchange = function() {
-                var file = this.files[0];
-                var reader = new FileReader();
-                reader.onload = function () {
-                    var id = 'blobid' + (new Date()).getTime();
-                    var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
-                    var base64 = reader.result.split(',')[1];
-                    var blobInfo = blobCache.create(id, file, base64);
-                    blobCache.add(blobInfo);
-                    cb(blobInfo.blobUri(), { title: file.name });
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        },
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+    document.addEventListener('DOMContentLoaded', function() {
+        var easyMDE = new EasyMDE({element: document.getElementById('content')});
+
+        document.getElementById('edit-course-form').addEventListener('submit', function(e) {
+            // Ensure EasyMDE content is updated before form submission
+            document.getElementById('content').value = easyMDE.value();
+        });
     });
 </script>
 {% endblock %}

@@ -6,6 +6,7 @@ from services.ai_service import personalize_content, hybrid_recommendations, dyn
 from database import db
 import numpy as np
 from bleach import clean
+import markdown
 
 bp = Blueprint('courses', __name__)
 

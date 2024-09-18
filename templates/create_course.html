@@ -12,7 +12,7 @@
             <textarea id="description" name="description" required class="form-control"></textarea>
         </div>
         <div class="form-group">
-            <label for="content">Course Content:</label>
+            <label for="content">Course Content (Markdown):</label>
             <textarea id="content" name="content" required class="form-control" rows="10"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Create Course</button>
@@ -20,35 +20,15 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.tiny.cloud/1/oly1pwo1sezqmns7jsm2qfl2r0u8livbgjoej2cohpsav7ih/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        tinymce.init({
-            selector: '#content',
-            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak codesample',
-            toolbar_mode: 'floating',
-            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | codesample | removeformat | help',
-            height: 500,
-            setup: function(editor) {
-                editor.on('change', function() {
-                    editor.save();
-                });
-            },
-            init_instance_callback: function(editor) {
-                editor.on('focus', function(e) {
-                    console.log('Editor got focus');
-                });
-                editor.on('blur', function(e) {
-                    console.log('Editor was blurred');
-                });
-            },
-            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-        });
+        var easyMDE = new EasyMDE({element: document.getElementById('content')});
 
-        // Add form submission event listener
         document.getElementById('create-course-form').addEventListener('submit', function(e) {
-            // Ensure TinyMCE content is updated before form submission
-            tinymce.triggerSave();
+            // Ensure EasyMDE content is updated before form submission
+            document.getElementById('content').value = easyMDE.value();
         });
     });
 </script>
