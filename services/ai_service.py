@@ -289,7 +289,7 @@ def content_based_recommendations(user, all_courses):
     user_courses = user.user_courses
     user_course_vectors = [vectorizer.transform([f"{uc.course.description or ''} {uc.course.content or ''}"]) for uc in user_courses if uc.course]
     if not user_course_vectors:
-        return np.zeros(len(all_courses))
+        return np.zeros((1, len(all_courses)))
     
     user_profile = np.asarray(vstack(user_course_vectors).mean(axis=0)).flatten()
     
@@ -300,11 +300,11 @@ def content_based_recommendations(user, all_courses):
     lsa = Pipeline([('svd', svd)])
     
     all_course_vectors_lsa = lsa.fit_transform(all_course_vectors)
-    user_profile_lsa = lsa.transform(user_profile)
+    user_profile_lsa = lsa.transform(user_profile.reshape(1, -1))
     
     similarities = cosine_similarity(user_profile_lsa, all_course_vectors_lsa)
     
-    return similarities.flatten()
+    return similarities.flatten().reshape(1, -1)
 
 def collaborative_filtering_recommendations(user, all_courses, all_users):
     user_course_matrix = np.asarray(np.zeros((len(all_users), len(all_courses))))
