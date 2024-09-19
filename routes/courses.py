@@ -57,4 +57,74 @@ def course_detail(course_id):
                            recommended_courses=recommended_courses,
                            adjusted_difficulty=adjusted_difficulty)
 
-# ... (rest of the file remains unchanged)
+@bp.route('/courses/create', methods=['GET', 'POST'])
+@login_required
+def create_course():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        content = request.form.get('content')
+        
+        new_course = Course(title=title, description=description, content=content)
+        db.session.add(new_course)
+        db.session.commit()
+        
+        flash('Course created successfully!', 'success')
+        return redirect(url_for('courses.course_detail', course_id=new_course.id))
+    
+    return render_template('create_course.html')
+
+@bp.route('/courses/<int:course_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_course(course_id):
+    course = Course.query.get_or_404(course_id)
+    
+    if request.method == 'POST':
+        course.title = request.form.get('title')
+        course.description = request.form.get('description')
+        course.content = request.form.get('content')
+        
+        db.session.commit()
+        flash('Course updated successfully!', 'success')
+        return redirect(url_for('courses.course_detail', course_id=course.id))
+    
+    return render_template('edit_course.html', course=course)
+
+@bp.route('/courses/<int:course_id>/delete', methods=['POST'])
+@login_required
+def delete_course(course_id):
+    course = Course.query.get_or_404(course_id)
+    
+    # Delete associated study groups
+    StudyGroup.query.filter_by(course_id=course_id).delete()
+    
+    db.session.delete(course)
+    db.session.commit()
+    flash('Course deleted successfully!', 'success')
+    return redirect(url_for('courses.course_list'))
+
+@bp.route('/courses/<int:course_id>/update_progress', methods=['POST'])
+@login_required
+def update_progress(course_id):
+    user_course = UserCourse.query.filter_by(user_id=current_user.id, course_id=course_id).first()
+    
+    if user_course:
+        user_course.progress = min(user_course.progress + 10, 100)
+        db.session.commit()
+        return jsonify({'success': True, 'progress': user_course.progress})
+    
+    return jsonify({'success': False}), 404
+
+@bp.route('/courses/<int:course_id>/submit_feedback', methods=['POST'])
+@login_required
+def submit_feedback(course_id):
+    data = request.json
+    difficulty = data.get('difficulty')
+    engagement = data.get('engagement')
+    feedback = data.get('feedback')
+    
+    # Here you would typically store this feedback in the database
+    # For now, we'll just log it
+    logging.info(f"Feedback received for course {course_id}: Difficulty: {difficulty}, Engagement: {engagement}, Feedback: {feedback}")
+    
+    return jsonify({'success': True})
