@@ -10,3 +10,4 @@ numpy==1.21.0
 scikit-learn==0.24.2
 matplotlib==3.4.3
 markdown==3.3.4
+Pygments==2.10.0
