@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from flaskext.markdown import Markdown
 from database import db
 import logging
 
@@ -17,7 +16,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
 # Initialize Flask-Markdown
-Markdown(app)
+# Markdown(app)  # Commented out as requested
 
 from models import User
 
