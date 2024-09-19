@@ -12,7 +12,7 @@
             <textarea id="description" name="description" required class="form-control"></textarea>
         </div>
         <div class="form-group">
-            <label for="content">Course Content (Markdown):</label>
+            <label for="content">Course Content:</label>
             <textarea id="content" name="content" required class="form-control" rows="10"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Create Course</button>
@@ -20,24 +20,18 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var easyMDE = new EasyMDE({
-            element: document.getElementById('content'),
-            spellChecker: false,
-            autosave: {
-                enabled: true,
-                uniqueId: "createCourseContent",
-                delay: 1000,
-            },
-        });
+    tinymce.init({
+        selector: '#content',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar: 'undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | h1 h2 h3 h4 h5 h6',
+        toolbar_mode: 'floating',
+        height: 400
+    });
 
-        document.getElementById('create-course-form').addEventListener('submit', function(e) {
-            // Ensure EasyMDE content is updated before form submission
-            document.getElementById('content').value = easyMDE.value();
-        });
+    document.getElementById('create-course-form').addEventListener('submit', function(e) {
+        // Ensure TinyMCE content is updated before form submission
+        tinymce.triggerSave();
     });
 </script>
 {% endblock %}

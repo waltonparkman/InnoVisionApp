@@ -10,11 +10,11 @@
         <p>This difficulty level is dynamically adjusted based on your performance and engagement.</p>
         <div class="course-content">
             <h5>Original Content:</h5>
-            {{ personalized_content.original_content | markdown | safe }}
+            {{ personalized_content.original_content | safe }}
         </div>
         <div class="adapted-content">
             <h5>Adapted Content:</h5>
-            {{ personalized_content.adapted_content | markdown | safe }}
+            {{ personalized_content.adapted_content | safe }}
         </div>
         <div class="learning-style-adaptations">
             <h4>Adaptations for your learning style:</h4>

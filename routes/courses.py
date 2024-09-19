@@ -6,7 +6,6 @@ from services.ai_service import personalize_content, hybrid_recommendations, dyn
 from database import db
 import numpy as np
 from bleach import clean
-import markdown
 
 bp = Blueprint('courses', __name__)
 
@@ -134,11 +133,8 @@ def create_course():
         logging.info(f"Content: {content[:100]}...")  # Log first 100 characters
         
         try:
-            # Convert Markdown to HTML
-            html_content = markdown.markdown(content, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite', 'fenced_code'])
-            
             # Sanitize the HTML content
-            sanitized_content = clean(html_content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
+            sanitized_content = clean(content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
             
             new_course = Course(title=title, description=description, content=sanitized_content)
             db.session.add(new_course)
@@ -164,11 +160,8 @@ def edit_course(course_id):
         course.description = request.form.get('description')
         content = request.form.get('content')
         
-        # Convert Markdown to HTML
-        html_content = markdown.markdown(content, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite', 'fenced_code'])
-        
         # Sanitize the HTML content
-        course.content = clean(html_content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
+        course.content = clean(content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
         
         db.session.commit()
         flash('Course updated successfully!', 'success')
