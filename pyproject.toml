@@ -19,6 +19,7 @@ bleach = "^6.1.0"
 werkzeug = "^3.0.4"
 sqlalchemy = "^2.0.35"
 flask-markdown = "^0.3"
+markdown = "^3.7"
 
 
 [build-system]
