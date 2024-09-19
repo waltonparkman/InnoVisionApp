@@ -24,7 +24,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var easyMDE = new EasyMDE({element: document.getElementById('content')});
+        var easyMDE = new EasyMDE({
+            element: document.getElementById('content'),
+            spellChecker: false,
+            autosave: {
+                enabled: true,
+                uniqueId: "createCourseContent",
+                delay: 1000,
+            },
+        });
 
         document.getElementById('create-course-form').addEventListener('submit', function(e) {
             // Ensure EasyMDE content is updated before form submission

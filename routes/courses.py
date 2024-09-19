@@ -134,10 +134,13 @@ def create_course():
         logging.info(f"Content: {content[:100]}...")  # Log first 100 characters
         
         try:
-            # Sanitize the content
-            content = clean(content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
+            # Convert Markdown to HTML
+            html_content = markdown.markdown(content, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite'])
             
-            new_course = Course(title=title, description=description, content=content)
+            # Sanitize the HTML content
+            sanitized_content = clean(html_content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
+            
+            new_course = Course(title=title, description=description, content=sanitized_content)
             db.session.add(new_course)
             db.session.commit()
             
@@ -159,7 +162,13 @@ def edit_course(course_id):
     if request.method == 'POST':
         course.title = request.form.get('title')
         course.description = request.form.get('description')
-        course.content = clean(request.form.get('content'), tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
+        content = request.form.get('content')
+        
+        # Convert Markdown to HTML
+        html_content = markdown.markdown(content, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite'])
+        
+        # Sanitize the HTML content
+        course.content = clean(html_content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
         
         db.session.commit()
         flash('Course updated successfully!', 'success')
