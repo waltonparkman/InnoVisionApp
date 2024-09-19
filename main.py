@@ -48,7 +48,7 @@ def serve_manifest():
 
 @app.template_filter('markdown')
 def markdown_filter(text):
-    return Markup(markdown.markdown(text, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite']))
+    return Markup(markdown.markdown(text, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite', 'fenced_code']))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
