@@ -435,6 +435,23 @@ docs = ["mdx-gh-links (>=0.2)", "mkdocs (>=1.5)", "mkdocs-gen-files", "mkdocs-li
 testing = ["coverage", "pyyaml"]
 
 [[package]]
+name = "markdown2"
+version = "2.5.0"
+description = "A fast and complete Python implementation of Markdown"
+optional = false
+python-versions = "<4,>=3.8"
+files = [
+    {file = "markdown2-2.5.0-py2.py3-none-any.whl", hash = "sha256:300d4429b620ebc974ef512339a9e08bc080473f95135a91f33906e24e8280c1"},
+    {file = "markdown2-2.5.0.tar.gz", hash = "sha256:9bff02911f8b617b61eb269c4c1a5f9b2087d7ff051604f66a61b63cab30adc2"},
+]
+
+[package.extras]
+all = ["latex2mathml", "pygments (>=2.7.3)", "wavedrom"]
+code-syntax-highlighting = ["pygments (>=2.7.3)"]
+latex = ["latex2mathml"]
+wavedrom = ["wavedrom"]
+
+[[package]]
 name = "markupsafe"
 version = "2.1.5"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -905,4 +922,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c40de3c84390a9c0a2486a136d7c7667fdca838d603141430ba0246be88fb454"
+content-hash = "ddd2c5752c014f446d9970f72e9276165dfd323734dacb3ffa6bc775551c15e4"

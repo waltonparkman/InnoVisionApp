@@ -45,7 +45,8 @@ form {
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -102,6 +103,78 @@ button:hover {
 
 .question {
     margin-bottom: 20px;
+}
+
+/* Markdown Styles */
+.course-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.course-content h1,
+.course-content h2,
+.course-content h3,
+.course-content h4,
+.course-content h5,
+.course-content h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.course-content p {
+    margin-bottom: 1em;
+}
+
+.course-content ul,
+.course-content ol {
+    margin-bottom: 1em;
+    padding-left: 2em;
+}
+
+.course-content code {
+    background-color: #f4f4f4;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.course-content pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.course-content pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+.course-content blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1em;
+    margin-left: 0;
+    font-style: italic;
+}
+
+.course-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.course-content th,
+.course-content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.course-content th {
+    background-color: #f4f4f4;
+    font-weight: bold;
 }
 
 /* Responsive Design */

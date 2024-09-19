@@ -12,26 +12,23 @@
             <textarea id="description" name="description" required class="form-control"></textarea>
         </div>
         <div class="form-group">
-            <label for="content">Course Content:</label>
+            <label for="content">Course Content (Markdown):</label>
             <textarea id="content" name="content" required class="form-control" rows="10"></textarea>
         </div>
+        <button type="button" id="preview-button" class="btn btn-secondary">Preview</button>
         <button type="submit" class="btn btn-primary">Create Course</button>
     </form>
+    <div id="preview-content" class="mt-4" style="display: none;"></div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-    tinymce.init({
-        selector: '#content',
-        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-        toolbar: 'undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | h1 h2 h3 h4 h5 h6',
-        toolbar_mode: 'floating',
-        height: 400
-    });
-
-    document.getElementById('create-course-form').addEventListener('submit', function(e) {
-        // Ensure TinyMCE content is updated before form submission
-        tinymce.triggerSave();
+    document.getElementById('preview-button').addEventListener('click', function() {
+        const content = document.getElementById('content').value;
+        const previewContent = document.getElementById('preview-content');
+        previewContent.innerHTML = marked(content);
+        previewContent.style.display = 'block';
     });
 </script>
 {% endblock %}
