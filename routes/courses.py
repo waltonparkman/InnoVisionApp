@@ -135,7 +135,7 @@ def create_course():
         
         try:
             # Convert Markdown to HTML
-            html_content = markdown.markdown(content, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite'])
+            html_content = markdown.markdown(content, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite', 'fenced_code'])
             
             # Sanitize the HTML content
             sanitized_content = clean(html_content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
@@ -165,7 +165,7 @@ def edit_course(course_id):
         content = request.form.get('content')
         
         # Convert Markdown to HTML
-        html_content = markdown.markdown(content, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite'])
+        html_content = markdown.markdown(content, extensions=['extra', 'nl2br', 'sane_lists', 'codehilite', 'fenced_code'])
         
         # Sanitize the HTML content
         course.content = clean(html_content, tags=['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'], attributes={'a': ['href', 'title'], 'img': ['src', 'alt']})
