@@ -3,6 +3,9 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from database import db
 import logging
+import markdown2 
+from markupsafe import Markup
+
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -43,6 +46,10 @@ def serve_service_worker():
 @app.route('/manifest.json')
 def serve_manifest():
     return send_from_directory(app.static_folder, 'manifest.json', mimetype='application/json')
+
+@app.template_filter('markdown')
+def markdown_filter(text):
+    return Markup(markdown2.markdown(text, extras=['fenced-code-blocks', 'tables']))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
